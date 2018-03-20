@@ -1,0 +1,1 @@
+{"highScore":12287,"coins":194}
