@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class MainMenuBackground : MonoBehaviour {
     //http://bestanimations.com/Nature/Water/underwater-ocean-gif.gif
     //this is the gif used for the animation
+
     public Texture[] frames;
     public RawImage explosion;
     private float frameRate = 0.0666f;

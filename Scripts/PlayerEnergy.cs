@@ -35,7 +35,7 @@ public class PlayerEnergy : MonoBehaviour
     {
         if (current_energy < 100)
         {
-           // Debug.Log("Gain energy: "+currentSlider + " slider value: " + currentSlider.value);
+            // Debug.Log("Gain energy: "+currentSlider + " slider value: " + currentSlider.value);
             if (current_energy + amountEnergy > 100)
             {
                 current_energy = 100;
@@ -51,21 +51,21 @@ public class PlayerEnergy : MonoBehaviour
     private void Update()
     {
         if (!isDead)
-        if (currentSlider.value > 0)
-        {
-           LoseEnergy(Time.deltaTime * 3);
-           // LoseEnergy(20);
-            UpdateEnergySlider();
-        }
-        else
-        {
-            //call that function and it will call OutOfEnergy otherwise endless loop
-            GetComponent<Character>().Death();
-        }
+            if (currentSlider.value > 0)
+            {
+                LoseEnergy(Time.deltaTime * 3);
+                // LoseEnergy(20);
+                UpdateEnergySlider();
+            }
+            else
+            {
+                //call that function and it will call OutOfEnergy otherwise endless loop
+                GetComponent<Character>().Death();
+            }
     }
     public void OutOfEnergy()
     {
-        isDead=true;
+        isDead = true;
         currentSlider.value = 0;
         current_energy = 0;
     }
