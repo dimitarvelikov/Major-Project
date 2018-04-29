@@ -4,7 +4,7 @@ public class Character : MonoBehaviour
 {
     public bool isDead;
 
-    private const int MAX_SPEED = 35;
+    private const int MAX_SPEED = 30;
     private const float MAX_SCALE = 1f;
 
     private Vector3 moveVector;
@@ -14,38 +14,44 @@ public class Character : MonoBehaviour
     private int coinsCollected;
     private float speed;
 
-    //   private float gravity = 5.0f;
-    //   private float verticalVelocity = 0.0f;
+    private AudioSource audio;
+    public AudioClip coinSound;
+    public AudioClip deathSound;
+    public AudioClip fishSound;
 
     // Use this for initialization
     private void Start()
     {
-        //Increase the max framerate from 30 to 60
-        Application.targetFrameRate = 60;
-
-        //Reference
+        
+        Debug.Log("The volume is: "+SettingsCanvas.volume);
+       
+        audio = GetComponent<AudioSource>();
+        audio.volume = SettingsCanvas.volume;
+        //Reference to the player's Character Controler - used for movement.
         playerController = GetComponent<CharacterController>();
 
-        //Reference
+        //Reference to the player character Vector3 size - used for scaling
         scaleVector = transform.localScale;
 
-        //Set/reset isDead
+        //Set or reset isDead
         isDead = false;
-
+       
         //Set initial speed
-        speed = 7.0f;
+        speed = 10.0f;
 
-        //Set/reset the coins
+        //Set or reset the amount of collected coins
         coinsCollected = 0;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        //Mobile Input
+     
+        /************************** MOBILE INPUT ***************************/
+        //if the player is not dead
         if (!isDead)
         {
-            //Slowly increase until reach the const MAX_SPEED
+            //Slightly increase the speed until not less than the const MAX_SPEED
             if (speed < MAX_SPEED)
             {
                 speed += Time.deltaTime;
@@ -54,20 +60,31 @@ public class Character : MonoBehaviour
             //Swipe Left - the furthest left position allowed is -3
             if (MobileInput.Instance.SwipeLeft && transform.localPosition.x > -1)
             {
+                //Move
                 playerController.Move(new Vector3(-3, 0, 0));
+
+                //Decrease the energy with 3 per swipe
+                GetComponent<PlayerEnergy>().LoseEnergy(3f);
             }
 
             //Swipe Right - the furthest right position allowed is 3
             if (MobileInput.Instance.SwipeRight && transform.localPosition.x < 1)
             {
+                //Move
                 playerController.Move(new Vector3(3, 0, 0));
+
+                //Decrease the energy with 3 per swipe
+                GetComponent<PlayerEnergy>().LoseEnergy(3f);
             }
 
             moveVector.z = speed;
             playerController.Move(moveVector * Time.deltaTime);
         }
 
-        /*    //Keyboard input - Only for testing in the Unity editor
+
+        /************************** KEYBOARD INPUT ***************************/
+        //Keyboard input - Only for testing in the Unity editor
+        /* 
           if (!isDead)
             {
                 if (speed < 25) { speed += Time.deltaTime; }
@@ -98,11 +115,12 @@ public class Character : MonoBehaviour
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         Death();
+        audio.PlayOneShot(deathSound, 1f);
     }
 
 
     //If the object has a renderer, then renderer.bounds.size
-    //  Next best thing would probably be collider.bounds.size
+    //Next best thing would probably be collider.bounds.size
     private void OnTriggerEnter(Collider hit)
     {
         //CompareTag("") is more efficient than tag == ""
@@ -112,6 +130,7 @@ public class Character : MonoBehaviour
         //Coins
         if (hit.gameObject.CompareTag("Collectable"))
         {
+            audio.PlayOneShot(coinSound, 1f);
             GetComponent<Score>().score += 100;
             ++coinsCollected;
         }
@@ -120,11 +139,13 @@ public class Character : MonoBehaviour
         else if (hit.gameObject.CompareTag("EnemyFish"))
         {
             GetComponent<PlayerEnergy>().LoseEnergy(20f);
+            audio.PlayOneShot(fishSound, 1f);
         }
 
         //add energy, add score, scale
         else if (hit.gameObject.CompareTag("FriendlyFish"))
         {
+            audio.PlayOneShot(fishSound, 1f);
             //add energy
             GetComponent<PlayerEnergy>().GainEnergy(20f);
 
@@ -147,6 +168,8 @@ public class Character : MonoBehaviour
 
     public void Death()
     {
+        Handheld.Vibrate();
+
         //Keep a variable with the score
         int score = (int)GetComponent<Score>().score;
 

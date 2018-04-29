@@ -9,12 +9,12 @@ public class DeathMenu : MonoBehaviour {
 
 	// Use this for initialization
     private	void Start () {
-        
+        //deactivate the Canvas at the start of the game
         gameObject.SetActive(false);
 	}
 
     public void ToggleEndOfGameMenu(float score){
-   //     GetComponent<RawImage>().color=new Color32(0, 0, 0, 255);
+        //update the UI text with the player's score
         endOfGameScoreText.text = "Score: " + score.ToString();
     }
 }

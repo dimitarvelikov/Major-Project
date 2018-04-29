@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-public class PlayerData : MonoBehaviour {
+public class PlayerData : MonoBehaviour
+{
     public int highScore;
     public int coins;
     private string FilePath;
@@ -11,31 +12,32 @@ public class PlayerData : MonoBehaviour {
     // Use this for initialization
     private void Awake()
     {
+        //Set the path to the OS's data folder
         FilePath = Path.Combine(Application.persistentDataPath, "save.txt");
+        //load - the file
         Load();
-        Debug.Log("Loaded highscore: " + highScore + ", coins: " + coins);
     }
-  //  void Start () {
-		//load
-        //path combine takes the application path and takes the desired filename to store the data
-        //it is important to use it because takes into account the platform that is being used
-        //for example if we use app.datapath/save.txt, this may work for Windows
-        //but not for Unix/MacOS because of the / \ differences etc.
-       // FilePath = Path.Combine(Application.dataPath, "save.txt");
-//	}
+
+    //Saves the collected coins and updates the highscore if it is a new one
     public void Save(int coinsCollected, float currentScore)
     {
         coins += coinsCollected;
-        if(highScore<(int)currentScore){
+        if (highScore < (int)currentScore)
+        {
             highScore = (int)currentScore;
         }
-        Debug.Log("saved highscore: " + highScore + " coins: " + coins);
+
         string jsonString = JsonUtility.ToJson(this);
         File.WriteAllText(FilePath, jsonString);
     }
-    public void Load(){
-
-        string jsonString = File.ReadAllText(Path.Combine(Application.persistentDataPath, "save.txt"));
-        JsonUtility.FromJsonOverwrite(jsonString,this);
+    public void Load()
+    {
+        //If the file is found read it and overwrite this class
+        if (File.Exists(FilePath)){
+            string jsonString = File.ReadAllText(FilePath);
+            JsonUtility.FromJsonOverwrite(jsonString, this);
+        }
+        //If the file is not found then this is the first start of the game
+        else { Debug.Log("File not Found - save.txt"); }
     }
 }
